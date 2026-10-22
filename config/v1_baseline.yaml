@@ -1,0 +1,19 @@
+name: v1_baseline
+description: Starting point. Dense-only vector search, top 3 chunks, friendly prompt with no guardrails.
+
+retrieval:
+  mode: dense          # dense | sparse | hybrid
+  top_k: 3             # chunks passed to the LLM
+  candidates: 20       # pool size before fusion / rerank
+  rerank: false        # cross-encoder rerank of the candidate pool
+  mmr: false           # maximal marginal relevance for diversity
+  mmr_lambda: 0.6
+
+generation:
+  model: llama-3.3-70b-versatile   # Groq model id - check https://console.groq.com/docs/models
+  temperature: 0
+  max_tokens: 300
+  prompt: prompts/friendly.txt
+  # $ per 1M tokens, used only for the cost estimate. Copy current prices from your provider.
+  price_in_per_m: 0.59
+  price_out_per_m: 0.79

@@ -1,0 +1,18 @@
+name: v2_hybrid_rerank
+description: Fix 1 (retrieval). Add BM25 keyword search fused with dense via RRF, then cross-encoder rerank. Prompt unchanged.
+
+retrieval:
+  mode: hybrid
+  top_k: 3
+  candidates: 20
+  rerank: true
+  mmr: false
+  mmr_lambda: 0.6
+
+generation:
+  model: llama-3.3-70b-versatile
+  temperature: 0
+  max_tokens: 300
+  prompt: prompts/friendly.txt
+  price_in_per_m: 0.59
+  price_out_per_m: 0.79

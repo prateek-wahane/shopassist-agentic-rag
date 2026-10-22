@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+index/
+.deepeval/
+.pytest_cache/
+# runs/ and reports/ are committed on purpose: they are the evidence trail

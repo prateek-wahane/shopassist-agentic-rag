@@ -1,0 +1,32 @@
+name: llm-eval-gate
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  retrieval-gate:            # free, no API key: blocks retrieval regressions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -r requirements.txt
+      - run: python -m shopassist.cli ingest
+      - run: python -m shopassist.cli golden validate v2
+      - run: pytest -q
+
+  answer-gate:               # smoke set through the full pipeline; needs the GROQ_API_KEY secret
+    runs-on: ubuntu-latest
+    needs: retrieval-gate
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'run-llm-eval') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -r requirements.txt
+      - run: python -m shopassist.cli ingest
+      - run: python -m shopassist.cli gate --golden v2 --config v3_grounded_prompt --smoke --min-pass 0.85
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
