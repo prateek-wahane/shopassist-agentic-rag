@@ -24,12 +24,14 @@ class Generator:
     def answer(self, cfg: dict, question: str, contexts: list[tuple[str, str]]) -> dict:
         g = cfg["generation"]
         system = build_system_prompt(cfg, contexts)
+        extra = {"reasoning_effort": g["reasoning_effort"]} if g.get("reasoning_effort") else {}
         t0 = time.perf_counter()
         resp = self.client.chat.completions.create(
             model=g["model"],
             temperature=g.get("temperature", 0),
             max_tokens=g.get("max_tokens", 300),
             messages=[{"role": "system", "content": system}, {"role": "user", "content": question}],
+            **extra,
         )
         llm_ms = (time.perf_counter() - t0) * 1000
         usage = resp.usage

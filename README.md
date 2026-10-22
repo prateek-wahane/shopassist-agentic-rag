@@ -20,7 +20,8 @@ comparison reports and a CI gate.
 
 ```text
 question -> retriever (dense bge-small | BM25 | hybrid RRF -> cross-encoder rerank -> optional MMR)
-         -> top-k chunks -> Groq LLM with prompt template -> answer
+         -> top-k chunks -> Groq LLM (openai/gpt-oss-20b) with prompt template -> answer
+         (optional judge: openai/gpt-oss-120b via DeepEval)
          -> metrics vs golden case -> runs/<run_id>/ -> compare -> reports/
 ```
 

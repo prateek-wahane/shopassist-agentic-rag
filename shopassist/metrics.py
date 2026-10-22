@@ -15,7 +15,12 @@ REFUSAL = re.compile(
 
 
 def _norm(text: str) -> str:
-    return text.lower().replace("–", "-").replace("—", "-").replace("’", "'")
+    # models often emit typographic dashes, non-breaking hyphens/spaces and curly quotes
+    # and markdown bold; "final-sale" and "final sale" should match, as should "5-7" and "5–7"
+    for ch in ("‐", "‑", "‒", "–", "—", "-"):
+        text = text.replace(ch, " ")
+    text = text.replace("*", "").replace(" ", " ").replace(" ", " ").replace("’", "'")
+    return re.sub(r"\s+", " ", text.lower())
 
 
 def fact_recall(answer: str, must_include: list) -> tuple[float, list[str]]:

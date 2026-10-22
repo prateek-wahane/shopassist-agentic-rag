@@ -10,9 +10,10 @@ retrieval:
   mmr_lambda: 0.6
 
 generation:
-  model: llama-3.3-70b-versatile
+  model: openai/gpt-oss-20b   # Groq model id - list yours: python -c "from groq import Groq; print([m.id for m in Groq().models.list().data])"
   temperature: 0
-  max_tokens: 300
+  max_tokens: 1024     # gpt-oss reasoning tokens count toward this cap
+  reasoning_effort: low
   prompt: prompts/grounded.txt
-  price_in_per_m: 0.59
-  price_out_per_m: 0.79
+  price_in_per_m: 0.075
+  price_out_per_m: 0.30

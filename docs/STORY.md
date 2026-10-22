@@ -106,8 +106,16 @@ python -m shopassist.cli eval --golden v2 --config v3_grounded_prompt
 python -m shopassist.cli compare golden-v2_v2_hybrid_rerank_full golden-v2_v3_grounded_prompt_full
 ```
 
-**Say:** "With retrieval fixed, the remaining failures were generation: the bot invented refunds and coupon
-codes. A grounded prompt with scope, no-invention and refusal rules took violations from [a] to [b]."
+**Say:** "With retrieval fixed, the remaining failures were generation: the friendly prompt happily wrote a
+pasta recipe and read 'stocks' as 'shoes'. A grounded prompt with scope, no-invention and refusal rules fixed
+those - pass rate [a] -> [b]."
+
+**Look for the regression too.** In the dry run during setup, the grounded prompt fixed out-of-scope cases but
+*broke* `MH-001` ("If I buy the Nimbus 25 and the merino run socks, will shipping be free?"): the stricter
+"use only the context" rule made the model say it had no shipping information, because the top 3 chunks were
+products, not the free-shipping policy. If your compare report shows it under **Regressed**, that is your best
+interview story: "my fix improved the average but regressed a multi-hop case; here's the evidence and the next
+change" (see Step 9).
 
 Commit: `git commit -am "Fix 2: grounded prompt with scope and refusal rules"`
 
@@ -143,7 +151,8 @@ note your agreement rate.
 
 After both fixes, `PE-003` ("I ran 50 km in my Nimbus 25 bought at full price. Can I still return them?") still
 misses: the product name "Nimbus 25" pulls three product chunks into the top 3 and pushes out the
-`returns#run-happy-trial` policy. Try one change at a time, measure each, keep the winner:
+`returns#run-happy-trial` policy. `MH-001` has the same root cause (products crowd out the shipping policy).
+Try one change at a time, measure each, keep the winner:
 
 - `top_k: 5` (more context, more tokens - check avg_input_tokens in the compare report)
 - `mmr: true` (diversity: stop three near-identical Nimbus chunks filling the slots)

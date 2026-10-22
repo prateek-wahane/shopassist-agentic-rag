@@ -23,7 +23,7 @@ def _make_judge():
         def generate(self, prompt: str, schema=None):
             kwargs = {"response_format": {"type": "json_object"}} if schema else {}
             resp = self.client.chat.completions.create(
-                model=self.model_name, temperature=0,
+                model=self.model_name, temperature=0, reasoning_effort="low",
                 messages=[{"role": "user", "content": prompt + ("\nReturn only valid JSON." if schema else "")}],
                 **kwargs)
             text = resp.choices[0].message.content or ""
